@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const clients = new Discord.Client();
 const mongoose = require('mongoose');
 const estudiante = require('./models/estudiantes.js');
+const _ = require('lodash');
 require('dotenv').config()
 
 /**
@@ -40,7 +41,8 @@ function assignGroup(message, apellido) {
             message.reply('Ese apellido no esta en la base de datos. Reintenta o comunicate con algun administrador :confused:');
         } else {
             var newApellido = estudiante.apellido.toLowerCase();
-            var nickname = message.guild.member(message.author).nickname.toLowerCase();
+            var author = message.guild.member(message.author);
+            var nickname = (author.nickname || author.user.username).toLowerCase();
             if (!nickname.includes(newApellido)) {
                 message.reply('Ese no es tu apellido :confused:');
                 return;
@@ -92,8 +94,9 @@ function assignMail(message, mail) {
                     message.reply(`El mail no existe en la base de datos. Revisa el mail que esta en el apartado de participantes del campus virtual o comunicate con **Federico Scarpa** o **Juan Mesaglio** o **Felipe Calvo** o **Julian berbel**.`);
                 } else {
                     if (!estudiante.verificado) {
-                        message.member.setNickname(titleCase(estudiante.nombreApellido.toLowerCase())).then(succ => {
-                            message.reply('Rol **estudiante** asignado, *mail* verificado correctamente, nombre asignado: ' + `**${titleCase(estudiante.nombreApellido.toLowerCase())}**. \nAhora tenes que usar el comando group, para ver como se usa ingresa el comando !help.`);
+                        var nombreApellido = titleCase(`${estudiante.nombre} ${estudiante.apellido}`.toLowerCase());
+                        message.member.setNickname(nombreApellido).then(succ => {
+                            message.reply('Rol **estudiante** asignado, *mail* verificado correctamente, nombre asignado: ' + `**${nombreApellido}**. \nAhora tenes que usar el comando group, para ver como se usa ingresa el comando !help.`);
                             assignRoleByName(message, '@estudiante')
                             estudiante.verificado = true;
                             estudiante.save();
@@ -118,7 +121,7 @@ function help(message) {
 }
 
 
-/**
+/**º
  * Discord
  */
 clients.on('ready', () => {
@@ -150,10 +153,6 @@ clients.on('message', message => {
             message.reply("Comando incorrecto. Para ver los comando habilitados usar !help.");
         }
     }
-});
-
-clients.on('message', message => {
-    if (message.channel.name !== 'lobby') return;
 });
 
 clients.login(process.env.DISCORD_TOKEN);

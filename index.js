@@ -35,33 +35,42 @@ function checkComm(message, str) {
 
 // asignacion de rol por letra de apellido
 function assignGroup(message, apellido) {
-    var nickname = message.guild.member(message.author).nickname.toLowerCase();
-    if (!nickname.includes(apellido.toLowerCase())) {
-        message.reply('Ese no es tu apellido :confused:');
-        return;
-    };
-    if (message.member.roles.cache.some(r => r.name === "Alumnos A-B" || r.name === "Alumnos C-F" || r.name === "Alumnos G-L" || r.name === "Alumnos M-P" || r.name === "Alumnos Q-Z")) {
-        message.reply('Ya tiene asignado el rol de grupo :stuck_out_tongue_closed_eyes:.');
-        return;
-    }
-    var firstLetter = apellido[0].toUpperCase();
-    if (firstLetter >= 'A' && firstLetter <= 'B') {
-        assignRoleByName(message, 'Alumnos A-B');
-        message.reply('Rol Alumnos A-B asignado.');
-    } else if (firstLetter >= 'C' && firstLetter <= 'F') {
-        assignRoleByName(message, 'Alumnos C-F');
-        message.reply('Rol Alumnos C-F asignado.');
-    } else if (firstLetter >= 'G' && firstLetter <= 'L') {
-        assignRoleByName(message, 'Alumnos G-L');
-        message.reply('Rol Alumnos G-L asignado.');
-    } else if (firstLetter >= 'M' && firstLetter <= 'P') {
-        assignRoleByName(message, 'Alumnos M-P');
-        message.reply('Rol Alumnos M-P asignado.');
-    } else if (firstLetter >= 'Q' && firstLetter <= 'Z') {
-        assignRoleByName(message, 'Alumnos Q-Z');
-        message.reply('Rol Alumnos Q-Z asignado.');
-    }
+    estudiante.findOne({ apellido: { $regex: new RegExp('^' + apellido, 'i') } }, function(err, estudiante) {
+        if (estudiante === null) {
+            message.reply('Ese apellido no esta en la base de datos. Reintenta o comunicate con algun administrador :confused:');
+        } else {
+            var newApellido = estudiante.apellido.toLowerCase();
+            var nickname = message.guild.member(message.author).nickname.toLowerCase();
+            if (!nickname.includes(newApellido)) {
+                message.reply('Ese no es tu apellido :confused:');
+                return;
+            };
+            if (message.member.roles.cache.some(r => r.name === "Alumnos A-B" || r.name === "Alumnos C-F" || r.name === "Alumnos G-L" || r.name === "Alumnos M-P" || r.name === "Alumnos Q-Z")) {
+                message.reply('Ya tiene asignado el rol de grupo :stuck_out_tongue_closed_eyes:.');
+                return;
+            }
+            var firstLetter = apellido[0].toUpperCase();
+            if (firstLetter >= 'A' && firstLetter <= 'B') {
+                assignRoleByName(message, 'Alumnos A-B');
+                message.reply('Rol Alumnos A-B asignado.');
+            } else if (firstLetter >= 'C' && firstLetter <= 'F') {
+                assignRoleByName(message, 'Alumnos C-F');
+                message.reply('Rol Alumnos C-F asignado.');
+            } else if (firstLetter >= 'G' && firstLetter <= 'L') {
+                assignRoleByName(message, 'Alumnos G-L');
+                message.reply('Rol Alumnos G-L asignado.');
+            } else if (firstLetter >= 'M' && firstLetter <= 'P') {
+                assignRoleByName(message, 'Alumnos M-P');
+                message.reply('Rol Alumnos M-P asignado.');
+            } else if (firstLetter >= 'Q' && firstLetter <= 'Z') {
+                assignRoleByName(message, 'Alumnos Q-Z');
+                message.reply('Rol Alumnos Q-Z asignado.');
+            }
+        }
+    });
 }
+
+
 
 // asignacion de rol por nombreDeRol
 function assignRoleByName(message, roleName) {

@@ -6,6 +6,7 @@ const clients = new Discord.Client();
 const mongoose = require('mongoose');
 const estudiante = require('./models/estudiantes.js');
 const _ = require('lodash');
+var exec = require('child_process');
 require('dotenv').config()
 
 /**
@@ -72,7 +73,22 @@ function assignGroup(message, apellido) {
     });
 }
 
-
+function ghc(messsage, comando) {
+    var re = new RegExp('"', 'g');
+    var _comando = comando.replace(re, "\\\"");
+    exec.exec(`docker run -i haskell:8 bash -c "ghci <<< $0" "${_comando}" `,
+        function(error, stdout, stderr) {
+            var rta = _.split(stdout, '\n', 3)[1];
+            if (error !== null) {
+                console.log('exec error: ' + error);
+            }
+            if (!rta.includes('Leaving GHCi')) {
+                messsage.reply('Comando ghc ejecutado.' + `\n${rta}`);
+            } else {
+                messsage.reply('Comando de ghc incorrecto.');
+            }
+        });
+}
 
 // asignacion de rol por nombreDeRol
 function assignRoleByName(message, roleName) {
@@ -116,7 +132,8 @@ function help(message) {
     let msg =
         "\n:clipboard: Help Menu: \n" +
         "!mail <mail>: Valida el mail,asigna rol y asigna el apodo\n" +
-        "!group <apellido>: Asigna el rol de grupo\n";
+        "!group <apellido>: Asigna el rol de grupo\n" +
+        "!ghc <comando>: Corre un comando en ghci";
     message.reply(msg);
 }
 
@@ -129,7 +146,7 @@ clients.on('ready', () => {
 });
 
 clients.on('message', message => {
-    if (message.channel.name !== 'lobby') return;
+    //if (message.channel.name !== 'lobby' || message.channel.name !== 'docentes') return;
     if (message.content[0] === '!') {
         if (checkComm(message, "mail")) {
             var cantidad = message.content.split(" ").length;
@@ -149,6 +166,9 @@ clients.on('message', message => {
             assignGroup(message, apellido);
         } else if (checkComm(message, "help")) {
             help(message);
+        } else if (checkComm(message, "ghc")) {
+            var comando = _.join(_.tail(message.content.split(" ")), ' ');
+            ghc(message, comando);
         } else if (checkComm(message, "")) {
             message.reply("Comando incorrecto. Para ver los comando habilitados usar !help.");
         }

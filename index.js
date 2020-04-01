@@ -83,7 +83,7 @@ function ghc(messsage, comando) {
                 console.log('exec error: ' + error);
             }
             if (!rta.includes('Leaving GHCi')) {
-                messsage.reply('Comando ghc ejecutado.' + `\n${rta}`);
+                messsage.reply('Comando ghc ejecutado.\n' + `\`\`\`haskell\n ${rta}\`\`\``);
             } else {
                 messsage.reply('Comando de ghc incorrecto.');
             }

@@ -76,16 +76,12 @@ function assignGroup(message, apellido) {
 function ghc(messsage, comando) {
     var re = new RegExp('"', 'g');
     var _comando = comando.replace(re, "\\\"");
-    exec.exec(`docker run -i --rm haskell:8 bash -c "ghci <<< $0" "${_comando}" `,
+    exec.exec(`docker run -i --rm haskell:8 bash -c "ghci <<< $0" "${_comando}" `, { timeout: 5000 },
         function(error, stdout, stderr) {
             var rta = _.split(stdout, '\n', 3)[1];
             if (error !== null) {
-                //if (error.includes('maxBuffer')) {
-                //    messsage.reply('Stack overflow');
-                //}
-                console.log(error);
-            }
-            if (!rta.includes('Leaving GHCi')) {
+                messsage.reply("Stack overflow");
+            } else if (!rta.includes('Leaving GHCi')) {
                 messsage.reply('Comando ghc ejecutado.\n' + `\`\`\`haskell\n ${rta}\`\`\``);
             } else {
                 messsage.reply('Comando de ghc incorrecto.');

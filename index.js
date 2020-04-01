@@ -76,11 +76,14 @@ function assignGroup(message, apellido) {
 function ghc(messsage, comando) {
     var re = new RegExp('"', 'g');
     var _comando = comando.replace(re, "\\\"");
-    exec.exec(`docker run -i haskell:8 bash -c "ghci <<< $0" "${_comando}" `,
+    exec.exec(`docker run -i --rm haskell:8 bash -c "ghci <<< $0" "${_comando}" `,
         function(error, stdout, stderr) {
             var rta = _.split(stdout, '\n', 3)[1];
             if (error !== null) {
-                console.log('exec error: ' + error);
+                //if (error.includes('maxBuffer')) {
+                //    messsage.reply('Stack overflow');
+                //}
+                console.log(error);
             }
             if (!rta.includes('Leaving GHCi')) {
                 messsage.reply('Comando ghc ejecutado.\n' + `\`\`\`haskell\n ${rta}\`\`\``);
@@ -132,8 +135,8 @@ function help(message) {
     let msg =
         "\n:clipboard: Help Menu: \n" +
         "!mail <mail>: Valida el mail,asigna rol y asigna el apodo\n" +
-        "!group <apellido>: Asigna el rol de grupo\n" +
-        "!ghc <comando>: Corre un comando en ghci";
+        "!group <apellido>: Asigna el rol de grupo\n"; // +
+    //"!ghc <comando>: Corre un comando en ghci";
     message.reply(msg);
 }
 
@@ -168,7 +171,8 @@ clients.on('message', message => {
             help(message);
         } else if (checkComm(message, "ghc")) {
             var comando = _.join(_.tail(message.content.split(" ")), ' ');
-            ghc(message, comando);
+            //ghc(message, comando);
+            message.reply("En Desa.");
         } else if (checkComm(message, "")) {
             message.reply("Comando incorrecto. Para ver los comando habilitados usar !help.");
         }

@@ -129,6 +129,11 @@ function help(message) {
     message.reply(msg);
 }
 
+function consulta(message, comando) {
+    console.log('COMMAND', comando);
+    console.log('MESSAGE', message);
+    message.reply({embed: {title: comando}});
+}
 
 /**º
  * Discord
@@ -162,6 +167,9 @@ clients.on('message', message => {
             var comando = _.join(_.tail(message.content.split(" ")), ' ');
             //ghc(message, comando);
             message.reply("En Desa.");
+        } else if (checkComm(message, "consulta")) {
+            var comando = _.join(_.tail(message.content.split(" ")), ' ');
+            consulta(message, comando);
         } else if (checkComm(message, "")) {
             message.reply("Comando incorrecto. Para ver los comando habilitados usar !help.");
         }

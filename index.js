@@ -53,22 +53,12 @@ function assignGroup(message, apellido) {
                 return;
             }
             var firstLetter = apellido[0].toUpperCase();
-            if (firstLetter >= 'A' && firstLetter <= 'B') {
-                assignRoleByName(message, 'Alumnos A-B');
-                message.reply('Rol Alumnos A-B asignado.');
-            } else if (firstLetter >= 'C' && firstLetter <= 'F') {
-                assignRoleByName(message, 'Alumnos C-F');
-                message.reply('Rol Alumnos C-F asignado.');
-            } else if (firstLetter >= 'G' && firstLetter <= 'L') {
-                assignRoleByName(message, 'Alumnos G-L');
-                message.reply('Rol Alumnos G-L asignado.');
-            } else if (firstLetter >= 'M' && firstLetter <= 'P') {
-                assignRoleByName(message, 'Alumnos M-P');
-                message.reply('Rol Alumnos M-P asignado.');
-            } else if (firstLetter >= 'Q' && firstLetter <= 'Z') {
-                assignRoleByName(message, 'Alumnos Q-Z');
-                message.reply('Rol Alumnos Q-Z asignado.');
-            }
+            var groups = ['AB', 'CF', 'GL', 'MP', 'QZ'];
+
+            var [first, last] = groups.find((group) => firstLetter.match(new RegExp(`^[${group.split("").join("-")}]$`))).split("");
+
+            assignRoleByName(message, `Alumnos ${first}-${last}`);
+            message.reply(`Rol Alumnos ${first}-${last} asignado.`);
         }
     });
 }

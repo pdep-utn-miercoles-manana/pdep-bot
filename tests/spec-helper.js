@@ -1,20 +1,20 @@
-const path = require('path');
-
 _ = require('lodash');
 chai = require('chai');
 sinon = require('sinon');
 
+chai.use(require('sinon-chai'))
+chai.use(require("chai-as-promised"));
+
 expect = chai.expect;
 
-chai.use(require('sinon-chai'));
+spec = (callback) => it('.', callback);
+requireSrc = (relativePath) => require(path.resolve(__dirname, '..', 'src', relativePath));
 
-requireSrc = (relativePath) => {
-  return require(path.resolve(__dirname, '..', 'src', relativePath));
-}
+const path = require('path');
+const Mongoose = requireSrc('./helpers/mongoose');
 
-spec = (callback) => {
-  it('.', callback);
-}
+before(Mongoose.connectDB);
+after(Mongoose.disconnectDB);
 
 suite = function (message, callback) {
 

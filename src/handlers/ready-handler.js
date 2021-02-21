@@ -1,9 +1,11 @@
 module.exports = class ReadyHandler {
-  get eventName() {
+
+  static get eventName() {
     return 'ready';
   }
 
-  handle() {
+  static handle() {
     console.info('Bot is ready');
   }
+
 }

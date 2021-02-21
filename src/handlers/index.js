@@ -1,14 +1,20 @@
+require('dotenv').config();
+
+const config = require('config');
+
 const handlers = [
-  require('./ready')
+  require('./ready-handler'),
+  require('./message-handler'),
 ]
 
 module.exports = class DiscordHandler {
 
-  static configure(discordClient) {
-    handlers.forEach((Handler) => {
-      const handler = new Handler();
-      discordClient.on(handler.eventName, handler.handle);
-    })
+  static login(discordClient) {
+    return discordClient.login(config.discord.token);
   }
+  
+  static configure(discordClient) {
+    handlers.forEach((Handler) => discordClient.on(Handler.eventName, Handler.handle))  
+  }  
 
 }

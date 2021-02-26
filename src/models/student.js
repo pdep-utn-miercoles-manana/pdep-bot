@@ -14,7 +14,7 @@ Student.methods.fullName = function () {
 
 Student.methods.verify = function () {
   this.isVerified = true;
-  this.save();
+  return this.save();
 };
 
 module.exports = Mongoose.model("Student", Student);

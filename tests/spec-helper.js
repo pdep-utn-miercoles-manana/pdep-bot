@@ -20,6 +20,8 @@ suite = function (message, callback) {
 
   let mocks = {};
 
+  beforeEach(() => Mongoose.connection.db.dropDatabase());
+
   afterEach(() => {
     _.forIn(mocks, (mock) => {
       mock.verify && mock.verify();
@@ -27,6 +29,8 @@ suite = function (message, callback) {
     });
   });
 
+  afterEach(() => Mongoose.connection.db.dropDatabase());
+  
   describe(message, function () {
     callback.bind(this)(mocks);
   });

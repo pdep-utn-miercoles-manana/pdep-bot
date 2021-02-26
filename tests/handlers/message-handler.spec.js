@@ -1,5 +1,6 @@
 const MockDiscord = require('../factories/discord');
 
+const Student = requireSrc('./models/student');
 const Message = requireSrc('./models/message');
 const MessageHandler = requireSrc('./handlers/message-handler');
 
@@ -11,7 +12,7 @@ suite('MessageHandler', (mocks) => {
   
   afterEach(() => discord && discord.destroy && discord.destroy());
 
-  describe('#eventName', () => {
+  it('#eventName', () => {
     spec(() => expect(MessageHandler.eventName).to.equal('message'));
   });  
   
@@ -80,25 +81,56 @@ suite('MessageHandler', (mocks) => {
       });
 
       describe('if argument is a valid mail', () => {
+        let mail = 'testing@gmail.com';
 
         describe('but user already has the rol', () => {
-          beforeEach(() => setUp('!mail testing@gmail.com'));
+          beforeEach(() => setUp(`!mail ${mail}`));
           beforeEach(() => mocks.hasRole = sinon.stub(message, 'hasRole').returns(true));
       
           spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('La persona ya tiene el rol estudiante asignado.'));
         });
 
-        describe('and user has not got the rol but does not exists in db', () => {
-          beforeEach(() => setUp('!mail testing@gmail.com'));
+        describe('and user has not got the rol', () => {
+          beforeEach(() => setUp(`!mail ${mail}`));
           beforeEach(() => mocks.hasRole = sinon.stub(message, 'hasRole').returns(false));
-      
-          spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('El mail ingresado no se encuentra en la base de datos.'));
+
+          describe('but does not exists in db', () => {        
+            spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('El mail ingresado no se encuentra en la base de datos.'));
+          });
+
+          describe('and exists in db', () => {
+            
+            function student(isVerified) {
+              return Student.create({ email: mail, isVerified: isVerified, firstName: 'Jane', lastName: 'Doe' });
+            }
+
+            describe('but is already verificated', () => {
+              beforeEach(() => student(true));
+              beforeEach(() => mocks.setRole = sinon.mock(message).expects('setRole').never());
+              beforeEach(() => mocks.setNickname = sinon.mock(message).expects('setNickname').never());
+
+              spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('El mail ya fue verificado.'));
+            });
+
+            describe('and is not verificated', () => {
+              beforeEach(() => student(false));
+              beforeEach(() => mocks.setRole = sinon.mock(message).expects('setRole').once().withArgs('estudiante'));
+              beforeEach(() => mocks.setNickname = sinon.mock(message).expects('setNickname').once().withArgs('Jane Doe'));
+
+              spec(() => expect(handler.dispatch(message)).to.eventually.be.equal('Rol **estudiante** asignado a **Jane Doe** con *mail* verificado correctamente.'));
+              
+              describe('should update isVerified student field' , () => {
+                let studentPromise;
+
+                beforeEach(() => handler.dispatch(message));
+                beforeEach(() => studentPromise = Student.findOne({ email: mail}).exec());
+                
+                spec(() => expect(studentPromise).to.eventually.have.property('isVerified').equal(true));
+              });
+            });
+          });
         });
-
       });
-
     });
-
   });
-
 });

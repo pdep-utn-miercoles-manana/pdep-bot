@@ -18,7 +18,7 @@ class MessageHandler {
     return Student.findOne({ email: email })
       .exec()
       .tap((student) => Validator.exists(student, 'El mail ingresado no se encuentra en la base de datos.'))
-      .tap((student) => Validator.condifionFails(student.isVerified, 'El mail ya fue verificado.'))
+      .tap((student) => Validator.conditionFails(student.isVerified, 'El mail ya fue verificado.'))
       .tap((student) => message.setNickname(student.fullName()))
       .tap((student) => message.setRole('estudiante'))
       .tap((student) => student.verify())

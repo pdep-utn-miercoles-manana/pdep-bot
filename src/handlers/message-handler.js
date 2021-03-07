@@ -14,15 +14,15 @@ class MessageHandler {
 
   __mail(message, email) {
     Validator.email(email, 'El email ingresado no es válido.');
-    Validator.conditionFails(message.hasRole("estudiante"), 'La persona ya tiene el rol estudiante asignado.');
+    Validator.conditionFails(message.hasRole(Student.MAIL_VERIFIED_ROLE_NAME), `La persona ya tiene el rol ${Student.MAIL_VERIFIED_ROLE_NAME} asignado.`);
     return Student.findOne({ email: email })
       .exec()
       .tap((student) => Validator.exists(student, 'El mail ingresado no se encuentra en la base de datos.'))
       .tap((student) => Validator.conditionFails(student.isVerified, 'El mail ya fue verificado.'))
       .tap((student) => message.setNickname(student.fullName()))
-      .tap((student) => message.setRole('estudiante'))
+      .tap((student) => message.setRole(Student.MAIL_VERIFIED_ROLE_NAME))
       .tap((student) => student.verify())
-      .then((student) => `Rol **estudiante** asignado a **${student.fullName()}** con *mail* verificado correctamente.`)
+      .then((student) => `Rol **${Student.MAIL_VERIFIED_ROLE_NAME}** asignado a **${student.fullName()}** con *mail* verificado correctamente.`)
   }
 
   __ping(_, argument) {

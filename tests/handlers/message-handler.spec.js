@@ -87,7 +87,7 @@ suite('MessageHandler', (mocks) => {
           beforeEach(() => setUp(`!mail ${mail}`));
           beforeEach(() => mocks.hasRole = sinon.stub(message, 'hasRole').returns(true));
       
-          spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('La persona ya tiene el rol estudiante asignado.'));
+          spec(() => expect(handler.dispatch(message)).to.eventually.be.rejectedWith('La persona ya tiene el rol validada asignado.'));
         });
 
         describe('and user has not got the rol', () => {
@@ -114,10 +114,10 @@ suite('MessageHandler', (mocks) => {
 
             describe('and is not verificated', () => {
               beforeEach(() => student(false));
-              beforeEach(() => mocks.setRole = sinon.mock(message).expects('setRole').once().withArgs('estudiante'));
+              beforeEach(() => mocks.setRole = sinon.mock(message).expects('setRole').once().withArgs('validada'));
               beforeEach(() => mocks.setNickname = sinon.mock(message).expects('setNickname').once().withArgs('Jane Doe'));
 
-              spec(() => expect(handler.dispatch(message)).to.eventually.be.equal('Rol **estudiante** asignado a **Jane Doe** con *mail* verificado correctamente.'));
+              spec(() => expect(handler.dispatch(message)).to.eventually.be.equal('Rol **validada** asignado a **Jane Doe** con *mail* verificado correctamente.'));
               
               describe('should update isVerified student field' , () => {
                 let studentPromise;

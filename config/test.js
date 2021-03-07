@@ -1,6 +1,7 @@
 module.exports = {
   discord: {
     token: 'abc',
+    verifiedMailRoleName: 'validada'
   },
   mongo: {
     connectionString: 'mongodb://localhost:27017/pdep-test',

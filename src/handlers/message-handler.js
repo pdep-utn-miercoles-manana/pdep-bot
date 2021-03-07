@@ -1,18 +1,23 @@
+const exec = require('child_process');
 const Promise = require('bluebird');
 
 const Message = require('../models/message');
 const Student = require('../models/student');
 const Validator = require('../models/validator');
 
+Promise.promisifyAll(exec, {multiArgs: true});
+
 class MessageHandler {
 
   dispatch(message) {
     const command = this[`__${message.command}`];
     if (typeof command !== 'function') throw new Error(`El comando **${message.command}** no existe.`)
-    return Promise.resolve(null).then(() => command(message, message.argument));
+    return Promise
+      .resolve()
+      .then(() => command(message.argument, message));
   }
 
-  __mail(message, email) {
+  __mail(email, message) {
     Validator.email(email, 'El email ingresado no es válido.');
     Validator.conditionFails(message.hasRole(Student.MAIL_VERIFIED_ROLE_NAME), `La persona ya tiene el rol ${Student.MAIL_VERIFIED_ROLE_NAME} asignado.`);
     return Student.findOne({ email: email })
@@ -25,12 +30,20 @@ class MessageHandler {
       .then((student) => `Rol **${Student.MAIL_VERIFIED_ROLE_NAME}** asignado a **${student.fullName()}** con *mail* verificado correctamente.`)
   }
 
-  __ping(_, argument) {
-    return `:ping_pong: ${argument}`;
+  __ping(pong) {
+    return `:ping_pong: ${pong}`;
   }
 
-  __echo(_, argument) {
-    return argument;
+  __echo(echo) {
+    return echo;
+  }
+
+  __ghci(argument) {
+    const expression = argument.startsWith(':') ? argument : `pp $ ${argument}`
+    const commands = ['exec', '-i', 'haskell', 'bash', '-c', 'timeout 5 ghci prettify.hs <<< $0', expression];
+    return exec
+      .execFileAsync('docker', commands)
+      .spread((stdout, stderr) => `Expresión evaluada:\n\`\`\`haskell\n ${stderr.trim() || stdout.split('\n')[3]}\`\`\``);
   }
 
   static get eventName() {

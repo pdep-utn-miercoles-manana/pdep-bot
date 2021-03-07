@@ -30,7 +30,7 @@ suite = function (message, callback) {
   });
 
   afterEach(() => Mongoose.connection.db.dropDatabase());
-  
+
   describe(message, function () {
     callback.bind(this)(mocks);
   });

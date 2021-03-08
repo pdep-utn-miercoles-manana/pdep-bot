@@ -1,0 +1,25 @@
+services:
+  haskell:
+    command: sleep infinity
+    container_name: haskell
+    image: haskell:7
+    volumes:
+      - ./docker/prettify.hs:/prettify.hs:ro
+  mongo:
+    container_name: mongo
+    env_file: .env
+    image: mongo:4.4.4
+  node:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: pdep-bot
+    depends_on:
+      - haskell
+      - mongo
+    env_file: .env
+    image: pdep-bot:v1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+version: '3.9'

@@ -5,10 +5,6 @@ services:
     image: haskell:7
     volumes:
       - ./docker/prettify.hs:/prettify.hs:ro
-  mongo:
-    container_name: mongo
-    env_file: .env
-    image: mongo:4.4.4
   node:
     build:
       context: .
@@ -16,7 +12,6 @@ services:
     container_name: pdep-bot
     depends_on:
       - haskell
-      - mongo
     env_file: .env
     image: pdep-bot:v1
     volumes:

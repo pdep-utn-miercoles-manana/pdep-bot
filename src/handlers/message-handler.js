@@ -39,11 +39,15 @@ class MessageHandler {
   }
 
   __ghci(argument) {
-    const expression = argument.startsWith(':') ? argument : `pp $ ${argument}`
+    const expression = argument.startsWith(':') ? argument : `pp $ ${argument}`;
     const commands = ['exec', '-i', 'haskell', 'bash', '-c', 'timeout 5 ghci prettify.hs <<< $0', expression];
     return exec
       .execFileAsync('docker', commands)
-      .spread((stdout, stderr) => `Expresión evaluada:\n\`\`\`haskell\n ${stderr.trim() || stdout.split('\n')[3]}\`\`\``);
+      .spread((stdout, stderr) => `Expresión evaluada:\n\`\`\`haskell\n ${stderr.trim() || stdout.split('\n')[3]}\`\`\``)
+      .catch((err) => {
+        console.log(err);
+        return Promise.reject(new Error("No se pudo ejecutar por timeout."));
+      });
   }
 
   static get eventName() {

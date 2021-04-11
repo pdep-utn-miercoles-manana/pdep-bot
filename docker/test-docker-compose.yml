@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-test
+    ports:
+    - 27017:27017
+  haskell:
+    command: sleep infinity
+    container_name: haskell-test
+    depends_on:
+      - mongo
+    image: haskell:7
+    volumes:
+      - ./docker/prettify.hs:/prettify.hs:ro
+  node:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile-test
+    container_name: pdep-bot-test
+    links:
+      - mongo:mongo
+    depends_on:
+      - haskell
+    env_file: ../.env
+    image: pdep-bot:v1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+version: '3.9'

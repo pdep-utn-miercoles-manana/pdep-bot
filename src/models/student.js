@@ -24,16 +24,19 @@ Student.methods.validateNamesLegnth = function(){
   if (fullName.length >= 32) {
     let lastNames = this.lastName.split(" ");
     if (lastNames.length !== 1) {
-      lastNames.pop();
-      this.lastName = lastNames.join(" ").trim();
+      this.cutName('lastName');
       this.validateNamesLegnth();
     } else {
-      let firstNames = this.firstName.split(" ");
-      firstNames.pop();
-      this.firstName = firstNames.join(" ").trim();
+      this.cutName('firstName');
       this.validateNamesLegnth();
     }
   }
+}
+
+Student.methods.cutName = function(porpName){
+  let porpsNames = this[porpName].split(" ");
+  porpsNames.pop();
+  this[porpName] = porpsNames.join(" ").trim();
 }
 
 Student.statics.MAIL_VERIFIED_ROLE_NAME = config.discord.verifiedMailRoleName;

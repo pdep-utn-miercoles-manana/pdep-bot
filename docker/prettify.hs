@@ -9,6 +9,12 @@ class Show a => PrettyPrint a where
   pp = putStrLn . prettify
   prettify :: a -> String
 
+instance {-# OVERLAPPING #-} PrettyPrint String where
+  prettify unString
+    | esStringLargo unString = '"' : take 50 unString ++ "...\""
+    | otherwise              = show unString
+    where esStringLargo      = not . null . drop 50
+
 instance Show a => PrettyPrint [a] where
   prettify unaLista
     | esListaLarga unaLista = "[" ++ (intercalate "," . map show . take 10) unaLista ++ ",...]"

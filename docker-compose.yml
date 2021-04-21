@@ -3,6 +3,7 @@ services:
     command: sleep infinity
     container_name: haskell
     image: haskell:7
+    network_mode: none
     volumes:
       - ./docker/prettify.hs:/prettify.hs:ro
   node:

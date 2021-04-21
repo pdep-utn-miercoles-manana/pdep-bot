@@ -1,0 +1,13 @@
+FROM haskell:7
+
+RUN useradd bot
+
+WORKDIR /home/bot
+
+RUN usermod -d /home/bot bot
+
+RUN chmod -R o+r /home/bot
+
+USER bot
+
+ENTRYPOINT ["sleep", "infinity"]

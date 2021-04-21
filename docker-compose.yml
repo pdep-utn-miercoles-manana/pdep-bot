@@ -1,11 +1,12 @@
 services:
   haskell:
-    command: sleep infinity
+    build:
+      context: .
+      dockerfile: docker/Dockerfile-haskell
     container_name: haskell
-    image: haskell:7
     network_mode: none
     volumes:
-      - ./docker/prettify.hs:/prettify.hs:ro
+      - ./docker/prettify.hs:/home/bot/prettify.hs:ro
   node:
     build:
       context: .

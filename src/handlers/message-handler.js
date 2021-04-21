@@ -5,7 +5,7 @@ const Message = require('../models/message');
 const Student = require('../models/student');
 const Validator = require('../models/validator');
 
-Promise.promisifyAll(exec, {multiArgs: true});
+Promise.promisifyAll(exec, { multiArgs: true });
 
 class MessageHandler {
 
@@ -40,7 +40,7 @@ class MessageHandler {
 
   __ghci(argument) {
     const expression = argument.startsWith(':') ? argument : `pp $ ${argument}`;
-    const commands = ['exec', '-i', 'haskell', 'bash', '-c', 'timeout 5 ghci prettify.hs <<< $0', expression];
+    const commands = ['exec', '-u', 'bot', '-i', 'haskell', 'bash', '-c', 'timeout 5 ghci prettify.hs <<< $0', expression];
     return exec
       .execFileAsync('docker', commands)
       .spread((stdout, stderr) => `Expresión evaluada:\n\`\`\`haskell\n ${stderr.trim() || stdout.split('\n')[3]}\`\`\``)
@@ -60,7 +60,7 @@ class MessageHandler {
       .tap(() => msg.validateProcess())
       .then(() => handler.dispatch(msg))
       .then((resp) => msg.reply(resp))
-      .catch((err) => err.message === 'Message not processed', () => {})
+      .catch((err) => err.message === 'Message not processed', () => { })
       .catch((err) => msg.reply(err.message));
   }
 

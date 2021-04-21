@@ -1,4 +1,4 @@
-FROM haskell:7
+FROM haskell:8
 
 RUN useradd bot
 

@@ -40,7 +40,7 @@ class MessageHandler {
 
   __ghci(argument) {
     const expression = argument.startsWith(':') ? argument : `pp $ ${argument}`;
-    const commands = ['exec', '-u', 'bot', '-i', 'haskell', 'bash', '-c', 'timeout -s 9 5 ghci prettify.hs <<< $0', expression];
+    const commands = ['exec', '-u', 'bot', '-i', 'haskell', 'bash', '-c', 'echo $0 | timeout -s 9 5 ghci prettify.hs', expression];
     return exec
       .execFileAsync('docker', commands)
       .spread((stdout, stderr) => `Expresión evaluada:\n\`\`\`haskell\n ${stderr.trim() || stdout.split('\n')[3]}\`\`\``)

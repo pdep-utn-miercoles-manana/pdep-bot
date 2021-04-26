@@ -104,7 +104,7 @@ suite('MessageHandler', (mocks) => {
           describe('and exists in db', () => {
 
             function student(isVerified) {
-              return Student.create({ email: mail, isVerified: isVerified, firstName: 'Jane', lastName: 'Doe' });
+              return Student.create({ email: mail, isVerified: isVerified, firstName: 'Jane ConUnSegundoNombreLargoooooo', lastName: 'Doe ConUnSegundoApellidoLargoooooo' });
             }
 
             describe('but is already verificated', () => {
